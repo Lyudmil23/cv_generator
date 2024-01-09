@@ -20,3 +20,13 @@ def accept(request):
         profile.save()
 
     return render(request, 'pdf/accept.html')
+
+
+def resume(request, pk):
+    user_profile = Profile.objects.get(pk=pk)
+    context = {
+        'user_profile': user_profile,
+    }
+
+    return render(request, 'pdf/resume.html', context)
+
