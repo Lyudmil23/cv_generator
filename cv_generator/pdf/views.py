@@ -1,6 +1,10 @@
 from django.shortcuts import render
 
 from cv_generator.pdf.models import Profile
+import pdfkit
+from django.http import HttpResponse
+from django.template import loader
+import io
 
 
 def accept(request):
@@ -27,6 +31,27 @@ def resume(request, pk):
     context = {
         'user_profile': user_profile,
     }
+    template = loader.get_template('pdf/resume.html')
+    html = template.render(context)
+    options = {
+        'page-size': 'Letter',
+        'encoding': 'UTF-8',
+    }
+    pdf = pdfkit.from_string(html, False, options)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment'
+    filename = 'resume.pdf'
 
-    return render(request, 'pdf/resume.html', context)
+    return response
+
+
+def profiles_list(request):
+    profiles = Profile.objects.all()
+    context = {
+        'profiles': profiles,
+    }
+
+    return render(request, 'pdf/list.html', context)
+
+
 
